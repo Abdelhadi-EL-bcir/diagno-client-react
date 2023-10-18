@@ -1,0 +1,27 @@
+/* Define your CSS styles here */
+.home-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    /* Background color for the container */
+}
+
+.content {
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    /* Center text horizontally */
+}
+
+.centered-button {
+    margin-top: 20px;
+    /* Add space between text and button */
+    padding: 12px 24px;
+    background: #0074d9;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
