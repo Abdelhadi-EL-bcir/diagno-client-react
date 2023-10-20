@@ -8,6 +8,7 @@ import "./App.css";
 import Acceuil from "./pages/diagonstic/Acceuil";
 import Support from "./pages/diagonstic/Support";
 import Question from "./components/question/Question";
+import Result from "./pages/diagonstic/Result";
 function App() {
 
   return (
@@ -20,6 +21,7 @@ function App() {
            <Route index path="/diagno/acc" element={<Acceuil/>}/>
            <Route path="/diagno/support" element={<Support/>}/>
            <Route path="/diagno/test" element={<Question/>}/>
+           <Route path="/diagno/result/:id" element={<Result/>}/>
         </Route>
       </Routes>
     </Router>
