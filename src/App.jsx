@@ -18,9 +18,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/diagno" element={<Diagnostic/>} >
-           <Route index path="/diagno/acc" element={<Acceuil/>}/>
+           <Route index path="/diagno" element={<Acceuil/>}/>
            <Route path="/diagno/support" element={<Support/>}/>
-           <Route path="/diagno/test" element={<Question/>}/>
+           <Route path="/diagno/test/:diagnosticId" element={<Question/>}/>
            <Route path="/diagno/result/:id" element={<Result/>}/>
         </Route>
       </Routes>

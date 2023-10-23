@@ -1,43 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/axiosConfig';
-import useNavigate from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 function Question() {
   const [questions, setQuestions] = useState([]);
-  const [diagnostic  , setDiagnostic] = useState({});
+  const {diagnosticId} = useParams();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [responses, setResponses] = useState([]);
-  const [user , setUser] = useState(JSON.parse(localStorage.getItem('user')));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
   const navigate = useNavigate();
-  useEffect(() => {
-    console.log()
+
+  useEffect(()=>{
     let headers = {
-      Authorization: `Bearer ${user.token}`
+      Authorization: `Bearer ${user.accessToken}`
     };
+    //get questions 
     api.get("/qst/all", {
       headers,
       withCredentials: true
     })
       .then((res) => {
-        console.log(res.data);
         setQuestions(res.data);
-        alert("done");
       })
       .catch((error) => alert(error.message));
-    
-    api.post("/diagno/add" , {user : {id : user.id}}).then(
-      (res)=>{
-        console.log(res.data);
-        setDiagnostic(res.data);
-          }
-    ).catch((error)=>{
-      console.log(error.message);
-    })
-  }, []);
+  }, [])
+
 
   const handleChoiceChange = (questionId, choice) => {
     const newResponses = [...responses];
-    newResponses.push({questionId : questionId , text : choice});
+    newResponses.push({ questionId: questionId, text: choice });
     setResponses(newResponses);
   };
 
@@ -47,10 +38,15 @@ function Question() {
     if (isLastQuestion) {
       console.log("Responses:", responses);
       responses.forEach(responce => {
-        let dataToSend  = {
+        let headers = {
+          Authorization: `Bearer ${user.accessToken}`
+        };
+        console.log(user.accessToken);
+        console.log("id is : ", diagnosticId);
+        let dataToSend = {
           text: responce.text,
           diagnostic: {
-            id: diagnostic.id
+            id: diagnosticId
           },
           question: {
             id: responce.questionId,
@@ -60,23 +56,26 @@ function Question() {
           }
         };
 
-        api.post('/res/add' ,dataToSend).then(
-          (res)=>{
-             console.log(res.data);
+        api.post('/res/add', dataToSend, {
+          headers,
+          withCredentials: true
+        }).then(
+          (res) => {
+            console.log(res.data);
           }
-        ).catch((error)=>{
+        ).catch((error) => {
           console.log(error.message);
         })
       });
-      navigate(`/diagno/result/${diagnostic.id}`);
+      navigate(`/diagno/result/${diagnosticId}`);
     } else {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
 
+  if(questions.length !== 0)
   return (
     <div className="container-fluid mt-3">
-      {questions.length > 0 && currentQuestionIndex < questions.length ? (
         <div className="row">
           <div className="col-md-6 mt-3">
             <p>{questions[currentQuestionIndex].text}</p>
@@ -87,7 +86,7 @@ function Question() {
                 id="toute-a-fait-daccord"
                 name={`question-${currentQuestionIndex}`}
                 value="toute-a-fait-daccord"
-                onChange={() => handleChoiceChange(questions[currentQuestionIndex].id, "toute-a-fait-daccord")}
+                onChange={() => handleChoiceChange(questions[currentQuestionIndex].id, "Toute_A_Fait_Daccord")}
               />
               <label htmlFor="toute-a-fait-daccord">Toute à fait d'accord</label>
             </div>
@@ -97,7 +96,7 @@ function Question() {
                 id="daccord"
                 name={`question-${currentQuestionIndex}`}
                 value="daccord"
-                onChange={() => handleChoiceChange(questions[currentQuestionIndex].id, "daccord")}
+                onChange={() => handleChoiceChange(questions[currentQuestionIndex].id, "Daccord")}
               />
               <label htmlFor="daccord">D'accord</label>
             </div>
@@ -107,7 +106,7 @@ function Question() {
                 id="neutre"
                 name={`question-${currentQuestionIndex}`}
                 value="neutre"
-                onChange={() => handleChoiceChange(questions[currentQuestionIndex].id, "neutre")}
+                onChange={() => handleChoiceChange(questions[currentQuestionIndex].id, "Neutre")}
               />
               <label htmlFor="neutre">Neutre</label>
             </div>
@@ -117,7 +116,7 @@ function Question() {
                 id="pas-daccord"
                 name={`question-${currentQuestionIndex}`}
                 value="pas-daccord"
-                onChange={() => handleChoiceChange(questions[currentQuestionIndex].id, "pas-daccord")}
+                onChange={() => handleChoiceChange(questions[currentQuestionIndex].id, "Pas_daccord")}
               />
               <label htmlFor="pas-daccord">Pas d'accord</label>
             </div>
@@ -127,7 +126,7 @@ function Question() {
                 id="desaccord-total"
                 name={`question-${currentQuestionIndex}`}
                 value="desaccord-total"
-                onChange={() => handleChoiceChange(currentQuestionIndex, "desaccord-total")}
+                onChange={() => handleChoiceChange(currentQuestionIndex, "Desaccord_Total")}
               />
               <label htmlFor="desaccord-total">Désaccord total</label>
             </div>
@@ -138,12 +137,14 @@ function Question() {
             </button>
           </div>
         </div>
-      ) : (
-        <p>Loading...
-        </p>
-      )}
     </div>
   );
+
+  return <div>
+    <span>
+      loading...
+    </span>
+  </div>
 }
 
 export default Question;
